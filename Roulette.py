@@ -10,7 +10,7 @@ color_map = {
     31: "Black", 32: "Red", 33: "Black", 34: "Red", 35: "Black", 36: "Red"
 }
 
-class RouletteGame(tk.Tk):
+class Roulette(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Roulette Game")
@@ -84,6 +84,8 @@ class RouletteGame(tk.Tk):
         except ValueError:
             self.result_label.config(text="Invalid input. Please enter a number.", fg="red")
 
+def start_game():
+   Roulette().mainloop()
+
 if __name__ == "__main__":
-    game = RouletteGame()
-    game.mainloop()
+    start_game()
