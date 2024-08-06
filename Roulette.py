@@ -1,6 +1,6 @@
 import tkinter as tk
 import random
-
+from PIL import Image, ImageTk  
 
 color_map = {
     0: "Green",
@@ -14,8 +14,17 @@ class RouletteGame(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Roulette Game")
-        self.geometry("300x250")
+        self.geometry("400x450")
         
+        # Load images
+        self.roulette_image = ImageTk.PhotoImage(Image.open("Roulette/Roulette_SingleZero.png")) #
+        self.red_image = ImageTk.PhotoImage(Image.open("Roulette/CircleRed.png"))
+        self.black_image = ImageTk.PhotoImage(Image.open("Roulette/CircleBlack.png"))
+        self.green_image = ImageTk.PhotoImage(Image.open("Roulette/CircleGreen.png"))
+        
+        # Roulette wheel display
+        self.roulette_label = tk.Label(self, image=self.roulette_image)
+        self.roulette_label.pack(pady=10)
         
         self.label = tk.Label(self, text="Place your bets!")
         self.label.pack(pady=10)
@@ -32,6 +41,9 @@ class RouletteGame(tk.Tk):
         
         self.spin_button = tk.Button(self, text="Spin the Wheel!", command=self.spin_wheel)
         self.spin_button.pack(pady=10)
+        
+        self.result_image_label = tk.Label(self)  # Label to display result image
+        self.result_image_label.pack(pady=10)
         
         self.result_label = tk.Label(self, text="")
         self.result_label.pack(pady=10)
@@ -60,6 +72,14 @@ class RouletteGame(tk.Tk):
                 result_text += "Sorry, you didn't win this time."
 
             self.result_label.config(text=result_text, fg="green")
+            
+            # Display the corresponding color image
+            if winning_color == "Red":
+                self.result_image_label.config(image=self.red_image)
+            elif winning_color == "Black":
+                self.result_image_label.config(image=self.black_image)
+            else:
+                self.result_image_label.config(image=self.green_image)
 
         except ValueError:
             self.result_label.config(text="Invalid input. Please enter a number.", fg="red")
