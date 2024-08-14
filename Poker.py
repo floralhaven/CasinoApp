@@ -73,7 +73,7 @@ class PokerGame:
         self.money = 100  # Starting money
 
         # Create canvas for background
-        self.canvas = tk.Canvas(self.root, width=1200, height=600)
+        self.canvas = tk.Canvas(self.root, width=2000, height=1000)
         self.canvas.pack(fill="both", expand=True)
         
         # Load background image
@@ -162,7 +162,7 @@ class PokerGame:
         # Position the card back image to align with the 5th card
         if self.card_back_label:
             card_back_x = card_positions[4][0] + self.get_card_size()[0] - self.get_card_back_size()[0]
-            card_back_y = card_positions[4][1] - 375
+            card_back_y = card_positions[4][1] - 625
             self.card_back_label.place(x=card_back_x, y=card_back_y, anchor='nw')
 
     def on_resize(self, event):
@@ -252,7 +252,7 @@ class PokerGame:
         rank = evaluate_hand(self.hand)
         payout = calculate_payout(rank)
         self.money += payout
-        self.status_label.config(text=f"Hand: {rank}, Payout: ${payout}. Money: ${self.money}")
+        self.status_label.config(text=f"Hand: {rank}\n Payout: ${payout}\n Money: ${self.money}")
 
     def withdraw(self):
         # Update the status message
