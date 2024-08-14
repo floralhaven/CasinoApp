@@ -2,6 +2,7 @@ import tkinter as tk
 from PIL import Image, ImageTk
 import random
 from collections import Counter
+import tkinter.messagebox as messagebox
 
 # Define card suits and ranks
 suits = ['Clubs', 'Diamonds', 'Hearts', 'Spades']
@@ -81,6 +82,16 @@ class PokerGame:
         self.background_label = tk.Label(self.canvas, image=self.background_photo)
         self.background_label.place(relwidth=1, relheight=1)
 
+        # Load card back images
+        self.card_back_images = [
+            Image.open(f'./BlackJack/Cards/cardBack_red1.png'),
+            Image.open(f'./BlackJack/Cards/cardBack_red2.png'),
+            Image.open(f'./BlackJack/Cards/cardBack_blue1.png'),
+            Image.open(f'./BlackJack/Cards/cardBack_blue2.png'),
+            Image.open(f'./BlackJack/Cards/cardBack_green1.png')
+        ]
+        self.card_back_index = 0
+
         # Create widgets on the canvas
         self.create_widgets()
         self.new_game()
@@ -104,6 +115,10 @@ class PokerGame:
         self.draw_button.place_forget()  # Hide initially
         self.withdraw_button.place_forget()  # Hide initially
         self.status_label.place_forget()  # Hide initially
+
+        # Create a label for the card back image
+        self.card_back_label = tk.Label(self.canvas)
+        self.card_back_label.place_forget()  # Hide initially
 
     def update_widget_positions(self):
         width = self.root.winfo_width()
@@ -130,7 +145,7 @@ class PokerGame:
             (width * 0.90, height * 0.57)
         ]
 
-        # Update positions of widgets (without resizing card images here)
+        # Update positions of widgets
         for i, (x, y) in enumerate(card_positions):
             if self.card_labels[i]:
                 self.card_labels[i].place(x=x, y=y, anchor='nw')
@@ -144,47 +159,52 @@ class PokerGame:
         self.withdraw_button.place(x=width * 0.05, y=height * 0.15, anchor='nw')
         self.status_label.place(x=width * 0.05, y=height * 0.25, anchor='nw')
 
+        # Position the card back image to align with the 5th card
+        if self.card_back_label:
+            card_back_x = card_positions[4][0] + self.get_card_size()[0] - self.get_card_back_size()[0]
+            card_back_y = card_positions[4][1] - 375
+            self.card_back_label.place(x=card_back_x, y=card_back_y, anchor='nw')
+
     def on_resize(self, event):
         self.update_widget_positions()
         self.update_card_sizes()
 
-    def update_card_sizes(self):
+    def get_card_size(self):
         width = self.root.winfo_width()
         height = self.root.winfo_height()
-        img_width = int(width * 0.09)  # Example proportion for width
-        img_height = int(height * 0.25)  # Example proportion for height
+        card_width = int(width * 0.09)  # Example proportion for width
+        card_height = int(height * 0.25)  # Example proportion for height
+        return card_width, card_height
+
+    def get_card_back_size(self):
+        return self.get_card_size()  # Card back size is the same as card size
+
+    def update_card_sizes(self):
+        card_width, card_height = self.get_card_size()
 
         # Ensure sizes are positive and non-zero
-        img_width = max(img_width, 1)
-        img_height = max(img_height, 1)
+        card_width = max(card_width, 1)
+        card_height = max(card_height, 1)
 
+        # Resize card images
         for i, card in enumerate(self.hand):
             card_name = f"card{card['suit']}{card['rank']}.png" if card else "cardJoker.png"
             card_path = f"./BlackJack/Cards/{card_name}"
             card_image = Image.open(card_path)
-            card_image = card_image.resize((img_width, img_height), Image.LANCZOS)
+            card_image = card_image.resize((card_width, card_height), Image.LANCZOS)
             img = ImageTk.PhotoImage(card_image)
             self.card_labels[i].config(image=img)
             self.card_labels[i].image = img  # Keep a reference to avoid garbage collection
+
+        # Resize card back image
+        card_back_image = self.card_back_images[self.card_back_index]
+        card_back_image = card_back_image.resize((card_width, card_height), Image.LANCZOS)
+        self.card_back_image_tk = ImageTk.PhotoImage(card_back_image)
+        self.card_back_label.config(image=self.card_back_image_tk)
+        self.card_back_label.image = self.card_back_image_tk  # Keep a reference to avoid garbage collection
 
     def update_display(self):
-        width = self.root.winfo_width()
-        height = self.root.winfo_height()
-        img_width = int(width * 0.1)  # Example proportion for width
-        img_height = int(height * 0.2)  # Example proportion for height
-
-        # Ensure sizes are positive and non-zero
-        img_width = max(img_width, 1)
-        img_height = max(img_height, 1)
-
-        for i, card in enumerate(self.hand):
-            card_name = f"card{card['suit']}{card['rank']}.png" if card else "cardJoker.png"
-            card_path = f"./BlackJack/Cards/{card_name}"
-            card_image = Image.open(card_path)
-            card_image = card_image.resize((img_width, img_height), Image.LANCZOS)
-            img = ImageTk.PhotoImage(card_image)
-            self.card_labels[i].config(image=img)
-            self.card_labels[i].image = img  # Keep a reference to avoid garbage collection
+        self.update_card_sizes()
 
     def new_game(self):
         # Reset deck and hands
@@ -192,6 +212,8 @@ class PokerGame:
         shuffle_deck(self.deck)
         self.hand = deal_hand(self.deck)
         self.hold = [False] * 5
+        self.card_back_index = (self.card_back_index + 1) % len(self.card_back_images)  # Rotate card backs
+
         self.update_display()
         self.status_label.config(text=f"Money: ${self.money}")
 
@@ -200,14 +222,31 @@ class PokerGame:
         self.hold_buttons[index].config(text="Hold" if self.hold[index] else f"Hold {index+1}")
 
     def draw(self):
+        # Check if the player has enough money to draw
+        if self.money < 10:
+            self.status_label.config(text="Not enough money to draw. Please withdraw or add more.")
+            return
+
+        # Deduct the cost of drawing
+        self.money -= 10
+        self.status_label.config(text=f"Money: ${self.money}")
+
+        # Check if there are enough cards to draw
         if len(self.deck) < self.hold.count(False):
             self.status_label.config(text="Not enough cards to draw.")
             return
 
+        # Draw new cards
         new_hand = [self.hand[i] if self.hold[i] else self.deck.pop() for i in range(5)]
         self.hand = new_hand
         self.update_display()
         self.evaluate_and_payout()
+
+        # Check if the player has run out of money
+        if self.money <= 0:
+            self.status_label.config(text="You have run out of money. Please withdraw or add more.")
+            self.withdraw()  # Optionally call withdraw to reset game or prompt user to add money
+
 
     def evaluate_and_payout(self):
         rank = evaluate_hand(self.hand)
@@ -216,9 +255,24 @@ class PokerGame:
         self.status_label.config(text=f"Hand: {rank}, Payout: ${payout}. Money: ${self.money}")
 
     def withdraw(self):
-        self.status_label.config(text=f"Withdrew ${self.money}. Returning to main menu.")
+        # Update the status message
+        message = f"Withdrew ${self.money}. Returning to main menu."
+        
+        # Show message box with the status message
+        messagebox.showinfo("Withdrawal", message)
+
+        # Reset the hold state
+        self.hold = [False] * 5
+
+        # Update hold button texts
+        for i, button in enumerate(self.hold_buttons):
+            button.config(text=f"Hold {i+1}")
+
+        # Clear money and update status
         self.money = 0
-        self.new_game()
+
+        # Close the Poker window
+        self.root.destroy()
 
 def start_game():
     root = tk.Toplevel()
