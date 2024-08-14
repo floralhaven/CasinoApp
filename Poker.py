@@ -91,10 +91,10 @@ class PokerGame:
     def create_widgets(self):
         # Create widgets
         self.card_labels = [tk.Label(self.canvas) for _ in range(5)]
-        self.hold_buttons = [tk.Button(self.canvas, text=f"Hold {i+1}", command=lambda i=i: self.toggle_hold(i)) for i in range(5)]
-        self.draw_button = tk.Button(self.canvas, text="Draw", command=self.draw)
-        self.withdraw_button = tk.Button(self.canvas, text="Withdraw", command=self.withdraw)
-        self.status_label = tk.Label(self.canvas, text=f"Money: ${self.money}", bg='lightgrey')
+        self.hold_buttons = [tk.Button(self.canvas, text=f"Hold {i+1}", command=lambda i=i: self.toggle_hold(i), font=('Helvetica', 14, 'bold')) for i in range(5)]
+        self.draw_button = tk.Button(self.canvas, text="Draw", command=self.draw, font=('Helvetica', 14, 'bold'))
+        self.withdraw_button = tk.Button(self.canvas, text="Withdraw", command=self.withdraw, font=('Helvetica', 14, 'bold'))
+        self.status_label = tk.Label(self.canvas, text=f"Money: ${self.money}", font=('Helvetica', 14, 'bold'))
 
         # Add widgets to canvas
         for label in self.card_labels:
@@ -116,18 +116,18 @@ class PokerGame:
         
         # Define proportional positions for card labels and hold buttons
         card_positions = [
-            (width * 0.0205, height * 0.655),
-            (width * 0.236, height * 0.655),
-            (width * 0.453, height * 0.655),
-            (width * 0.669, height * 0.655),
-            (width * 0.886, height * 0.655)
+            (width * 0.0205, height * 0.68),
+            (width * 0.237, height * 0.68),
+            (width * 0.453, height * 0.68),
+            (width * 0.669, height * 0.68),
+            (width * 0.886, height * 0.68)
         ]
         hold_positions = [
-            (width * 0.05, height * 0.57),
-            (width * 0.265, height * 0.57),
-            (width * 0.48, height * 0.57),
-            (width * 0.70, height * 0.57),
-            (width * 0.92, height * 0.57)
+            (width * 0.035, height * 0.57),
+            (width * 0.251, height * 0.57),
+            (width * 0.47, height * 0.57),
+            (width * 0.685, height * 0.57),
+            (width * 0.90, height * 0.57)
         ]
 
         # Update positions of widgets (without resizing card images here)
@@ -152,7 +152,7 @@ class PokerGame:
         width = self.root.winfo_width()
         height = self.root.winfo_height()
         img_width = int(width * 0.09)  # Example proportion for width
-        img_height = int(height * 0.3)  # Example proportion for height
+        img_height = int(height * 0.25)  # Example proportion for height
 
         # Ensure sizes are positive and non-zero
         img_width = max(img_width, 1)
