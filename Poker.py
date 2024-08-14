@@ -7,7 +7,6 @@ from collections import Counter
 suits = ['Clubs', 'Diamonds', 'Hearts', 'Spades']
 ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'K', 'Q']
 
-# Function to create a new deck of cards
 def create_deck():
     return [{'suit': suit, 'rank': rank} for suit in suits for rank in ranks]
 
@@ -71,27 +70,121 @@ class PokerGame:
         self.root = root
         self.root.title("5-Card Poker")
         self.money = 100  # Starting money
+
+        # Create canvas for background
+        self.canvas = tk.Canvas(self.root, width=1200, height=600)
+        self.canvas.pack(fill="both", expand=True)
+        
+        # Load background image
+        self.background_image = Image.open('./Poker/PokerTable.png')
+        self.background_photo = ImageTk.PhotoImage(self.background_image)
+        self.background_label = tk.Label(self.canvas, image=self.background_photo)
+        self.background_label.place(relwidth=1, relheight=1)
+
+        # Create widgets on the canvas
         self.create_widgets()
         self.new_game()
 
+        # Update canvas background on window resize
+        self.root.bind('<Configure>', self.on_resize)
+
     def create_widgets(self):
-        # Create the GUI elements
-        self.card_labels = [tk.Label(self.root) for _ in range(5)]
-        for i, label in enumerate(self.card_labels):
-            label.grid(row=0, column=i, padx=10, pady=10)
+        # Create widgets
+        self.card_labels = [tk.Label(self.canvas) for _ in range(5)]
+        self.hold_buttons = [tk.Button(self.canvas, text=f"Hold {i+1}", command=lambda i=i: self.toggle_hold(i)) for i in range(5)]
+        self.draw_button = tk.Button(self.canvas, text="Draw", command=self.draw)
+        self.withdraw_button = tk.Button(self.canvas, text="Withdraw", command=self.withdraw)
+        self.status_label = tk.Label(self.canvas, text=f"Money: ${self.money}", bg='lightgrey')
 
-        self.hold_buttons = [tk.Button(self.root, text=f"Hold {i+1}", command=lambda i=i: self.toggle_hold(i)) for i in range(5)]
-        for i, button in enumerate(self.hold_buttons):
-            button.grid(row=1, column=i, padx=5)
+        # Add widgets to canvas
+        for label in self.card_labels:
+            label.place_forget()  # Hide initially
+        for button in self.hold_buttons:
+            button.place_forget()  # Hide initially
+        self.draw_button.place_forget()  # Hide initially
+        self.withdraw_button.place_forget()  # Hide initially
+        self.status_label.place_forget()  # Hide initially
 
-        self.draw_button = tk.Button(self.root, text="Draw", command=self.draw)
-        self.draw_button.grid(row=2, column=0, columnspan=5, pady=10)
+    def update_widget_positions(self):
+        width = self.root.winfo_width()
+        height = self.root.winfo_height()
 
-        self.status_label = tk.Label(self.root, text=f"Money: ${self.money}")
-        self.status_label.grid(row=3, column=0, columnspan=5)
+        # Resize background image to fit the canvas
+        resized_background = self.background_image.resize((width, height), Image.LANCZOS)
+        self.background_photo = ImageTk.PhotoImage(resized_background)
+        self.background_label.config(image=self.background_photo)
+        
+        # Define proportional positions for card labels and hold buttons
+        card_positions = [
+            (width * 0.0205, height * 0.655),
+            (width * 0.236, height * 0.655),
+            (width * 0.453, height * 0.655),
+            (width * 0.669, height * 0.655),
+            (width * 0.886, height * 0.655)
+        ]
+        hold_positions = [
+            (width * 0.05, height * 0.57),
+            (width * 0.265, height * 0.57),
+            (width * 0.48, height * 0.57),
+            (width * 0.70, height * 0.57),
+            (width * 0.92, height * 0.57)
+        ]
 
-        self.withdraw_button = tk.Button(self.root, text="Withdraw", command=self.withdraw)
-        self.withdraw_button.grid(row=4, column=0, columnspan=5, pady=10)
+        # Update positions of widgets (without resizing card images here)
+        for i, (x, y) in enumerate(card_positions):
+            if self.card_labels[i]:
+                self.card_labels[i].place(x=x, y=y, anchor='nw')
+
+        for i, (x, y) in enumerate(hold_positions):
+            if self.hold_buttons[i]:
+                self.hold_buttons[i].place(x=x, y=y, anchor='nw')
+
+        # Ensure that all other widgets are correctly positioned
+        self.draw_button.place(x=width * 0.05, y=height * 0.05, anchor='nw')
+        self.withdraw_button.place(x=width * 0.05, y=height * 0.15, anchor='nw')
+        self.status_label.place(x=width * 0.05, y=height * 0.25, anchor='nw')
+
+    def on_resize(self, event):
+        self.update_widget_positions()
+        self.update_card_sizes()
+
+    def update_card_sizes(self):
+        width = self.root.winfo_width()
+        height = self.root.winfo_height()
+        img_width = int(width * 0.09)  # Example proportion for width
+        img_height = int(height * 0.3)  # Example proportion for height
+
+        # Ensure sizes are positive and non-zero
+        img_width = max(img_width, 1)
+        img_height = max(img_height, 1)
+
+        for i, card in enumerate(self.hand):
+            card_name = f"card{card['suit']}{card['rank']}.png" if card else "cardJoker.png"
+            card_path = f"./BlackJack/Cards/{card_name}"
+            card_image = Image.open(card_path)
+            card_image = card_image.resize((img_width, img_height), Image.LANCZOS)
+            img = ImageTk.PhotoImage(card_image)
+            self.card_labels[i].config(image=img)
+            self.card_labels[i].image = img  # Keep a reference to avoid garbage collection
+
+    def update_display(self):
+        width = self.root.winfo_width()
+        height = self.root.winfo_height()
+        img_width = int(width * 0.1)  # Example proportion for width
+        img_height = int(height * 0.2)  # Example proportion for height
+
+        # Ensure sizes are positive and non-zero
+        img_width = max(img_width, 1)
+        img_height = max(img_height, 1)
+
+        for i, card in enumerate(self.hand):
+            card_name = f"card{card['suit']}{card['rank']}.png" if card else "cardJoker.png"
+            card_path = f"./BlackJack/Cards/{card_name}"
+            card_image = Image.open(card_path)
+            card_image = card_image.resize((img_width, img_height), Image.LANCZOS)
+            img = ImageTk.PhotoImage(card_image)
+            self.card_labels[i].config(image=img)
+            self.card_labels[i].image = img  # Keep a reference to avoid garbage collection
 
     def new_game(self):
         # Reset deck and hands
@@ -101,15 +194,6 @@ class PokerGame:
         self.hold = [False] * 5
         self.update_display()
         self.status_label.config(text=f"Money: ${self.money}")
-
-    def update_display(self):
-        for i, card in enumerate(self.hand):
-            card_name = f"card{card['suit']}{card['rank']}.png" if card else "cardJoker.png"
-            img = Image.open(f"./BlackJack/Cards/{card_name}")
-            img = img.resize((100, 150), Image.LANCZOS)
-            img = ImageTk.PhotoImage(img)
-            self.card_labels[i].config(image=img)
-            self.card_labels[i].image = img
 
     def toggle_hold(self, index):
         self.hold[index] = not self.hold[index]
@@ -132,12 +216,14 @@ class PokerGame:
         self.status_label.config(text=f"Hand: {rank}, Payout: ${payout}. Money: ${self.money}")
 
     def withdraw(self):
-        # Logic for withdrawing and possibly returning to the main menu
         self.status_label.config(text=f"Withdrew ${self.money}. Returning to main menu.")
         self.money = 0
         self.new_game()
 
-if __name__ == "__main__":
-    root = tk.Tk()
-    game = PokerGame(root)
+def start_game():
+    root = tk.Toplevel()
+    PokerGame(root)
     root.mainloop()
+
+if __name__ == "__main__":
+    start_game()
