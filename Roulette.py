@@ -3,21 +3,22 @@ import random
 from PIL import Image, ImageTk  
 
 color_map = {
-    0: "Green",
-    1: "Red", 2: "Black", 3: "Red", 4: "Black", 5: "Red", 6: "Black", 7: "Red", 8: "Black", 9: "Red", 10: "Black",
-    11: "Black", 12: "Red", 13: "Black", 14: "Red", 15: "Black", 16: "Red", 17: "Black", 18: "Red", 19: "Red", 20: "Black",
-    21: "Red", 22: "Black", 23: "Red", 24: "Black", 25: "Red", 26: "Black", 27: "Red", 28: "Black", 29: "Black", 30: "Red",
-    31: "Black", 32: "Red", 33: "Black", 34: "Red", 35: "Black", 36: "Red"
+    0: "Green", 1: "Red", 2: "Black", 3: "Red", 4: "Black", 5: "Red", 6: "Black", 
+    7: "Red", 8: "Black", 9: "Red", 10: "Black", 11: "Black", 12: "Red", 13: "Black", 
+    14: "Red", 15: "Black", 16: "Red", 17: "Black", 18: "Red", 19: "Red", 20: "Black", 
+    21: "Red", 22: "Black", 23: "Red", 24: "Black", 25: "Red", 26: "Black", 27: "Red", 
+    28: "Black", 29: "Black", 30: "Red", 31: "Black", 32: "Red", 33: "Black", 
+    34: "Red", 35: "Black", 36: "Red"
 }
 
-class Roulette(tk.Tk):
-    def __init__(self):
-        super().__init__()
+class Roulette(tk.Toplevel):  # Inherit from Toplevel instead of Tk
+    def __init__(self, master=None):
+        super().__init__(master)
         self.title("Roulette Game")
-        self.geometry("400x450")
+        self.geometry("2000x1000")
         
         # Load images
-        self.roulette_image = ImageTk.PhotoImage(Image.open("Roulette/Roulette_SingleZero.png")) #
+        self.roulette_image = ImageTk.PhotoImage(Image.open("Roulette/Roulette_SingleZero.png"))
         self.red_image = ImageTk.PhotoImage(Image.open("Roulette/CircleRed.png"))
         self.black_image = ImageTk.PhotoImage(Image.open("Roulette/CircleBlack.png"))
         self.green_image = ImageTk.PhotoImage(Image.open("Roulette/CircleGreen.png"))
@@ -42,7 +43,7 @@ class Roulette(tk.Tk):
         self.spin_button = tk.Button(self, text="Spin the Wheel!", command=self.spin_wheel)
         self.spin_button.pack(pady=10)
         
-        self.result_image_label = tk.Label(self)  # Label to display result image
+        self.result_image_label = tk.Label(self)
         self.result_image_label.pack(pady=10)
         
         self.result_label = tk.Label(self, text="")
@@ -85,10 +86,4 @@ class Roulette(tk.Tk):
             self.result_label.config(text="Invalid input. Please enter a number.", fg="red")
 
 def start_game():
-        root = tk.Toplevel()
-   Roulette().mainloop()
-    root.mainloop()
-
-
-if __name__ == "__main__":
-    start_game()
+    Roulette().mainloop()
