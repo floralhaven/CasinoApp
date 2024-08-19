@@ -85,7 +85,10 @@ class Roulette(tk.Tk):
             self.result_label.config(text="Invalid input. Please enter a number.", fg="red")
 
 def start_game():
+        root = tk.Toplevel()
    Roulette().mainloop()
+    root.mainloop()
+
 
 if __name__ == "__main__":
     start_game()
