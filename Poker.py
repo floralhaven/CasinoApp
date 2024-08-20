@@ -82,13 +82,22 @@ class PokerGame:
         self.background_label = tk.Label(self.canvas, image=self.background_photo)
         self.background_label.place(relwidth=1, relheight=1)
 
-        # Load card back images
         self.card_back_images = [
             Image.open(f'./BlackJack/Cards/cardBack_red1.png'),
             Image.open(f'./BlackJack/Cards/cardBack_red2.png'),
+            Image.open(f'./BlackJack/Cards/cardBack_red3.png'),
+            Image.open(f'./BlackJack/Cards/cardBack_red4.png'),
+            Image.open(f'./BlackJack/Cards/cardBack_red5.png'),
             Image.open(f'./BlackJack/Cards/cardBack_blue1.png'),
             Image.open(f'./BlackJack/Cards/cardBack_blue2.png'),
-            Image.open(f'./BlackJack/Cards/cardBack_green1.png')
+            Image.open(f'./BlackJack/Cards/cardBack_blue3.png'),
+            Image.open(f'./BlackJack/Cards/cardBack_blue4.png'),
+            Image.open(f'./BlackJack/Cards/cardBack_blue5.png'),
+            Image.open(f'./BlackJack/Cards/cardBack_green1.png'),
+            Image.open(f'./BlackJack/Cards/cardBack_green2.png'),
+            Image.open(f'./BlackJack/Cards/cardBack_green3.png'),
+            Image.open(f'./BlackJack/Cards/cardBack_green4.png'),
+            Image.open(f'./BlackJack/Cards/cardBack_green5.png')
         ]
         self.card_back_index = 0
 
@@ -100,12 +109,16 @@ class PokerGame:
         self.root.bind('<Configure>', self.on_resize)
 
     def create_widgets(self):
+        bg_color = '#006400'  # Dark green
+        border_color = '#00FF00'  # Lime green
         # Create widgets
         self.card_labels = [tk.Label(self.canvas) for _ in range(5)]
-        self.hold_buttons = [tk.Button(self.canvas, text=f"Hold {i+1}", command=lambda i=i: self.toggle_hold(i), font=('Helvetica', 14, 'bold')) for i in range(5)]
-        self.draw_button = tk.Button(self.canvas, text="Draw", command=self.draw, font=('Helvetica', 14, 'bold'))
-        self.withdraw_button = tk.Button(self.canvas, text="Withdraw", command=self.withdraw, font=('Helvetica', 14, 'bold'))
-        self.status_label = tk.Label(self.canvas, text=f"Money: ${self.money}", font=('Helvetica', 14, 'bold'))
+        self.hold_buttons = [tk.Button(self.canvas, text=f"Hold {i+1}", command=lambda i=i: self.toggle_hold(i), font=('Helvetica', 14, 'bold'), bg=bg_color, fg='white') for i in range(5)]
+        self.draw_button = tk.Button(self.canvas, text="Draw", command=self.draw, font=('Helvetica', 14, 'bold'), bg=bg_color, fg='white')
+        self.withdraw_button = tk.Button(self.canvas, text="Withdraw", command=self.withdraw, font=('Helvetica', 14, 'bold'), bg=bg_color, fg='white')
+        self.status_label = tk.Label(self.canvas, text=f"Money: ${self.money}", font=('Helvetica', 14, 'bold'), bg=bg_color, fg='white')
+        self.payout_label = tk.Label(self.canvas, text="Pair \n 1:1 \n Two Pair \n 5:1 \n Three of a Kind \n 10:1 \n Straight \n 25:1 \n Flush \n 50:1 \n Full House \n 100:1 \n Four of a Kind \n 1,000:1 \n Straight Flush \n 10,000:1 \n Royal Flush \n 100,000:1", font=('Helvetica', 14, 'bold'), bg=bg_color, fg='white')
+
 
         # Add widgets to canvas
         for label in self.card_labels:
@@ -115,6 +128,7 @@ class PokerGame:
         self.draw_button.place_forget()  # Hide initially
         self.withdraw_button.place_forget()  # Hide initially
         self.status_label.place_forget()  # Hide initially
+        self.payout_label.place_forget()
 
         # Create a label for the card back image
         self.card_back_label = tk.Label(self.canvas)
@@ -155,9 +169,10 @@ class PokerGame:
                 self.hold_buttons[i].place(x=x, y=y, anchor='nw')
 
         # Ensure that all other widgets are correctly positioned
-        self.draw_button.place(x=width * 0.05, y=height * 0.05, anchor='nw')
-        self.withdraw_button.place(x=width * 0.05, y=height * 0.15, anchor='nw')
-        self.status_label.place(x=width * 0.05, y=height * 0.25, anchor='nw')
+        self.draw_button.place(x=width * 0.01, y=height * 0.05, anchor='nw')
+        self.withdraw_button.place(x=width * 0.01, y=height * 0.10, anchor='nw')
+        self.status_label.place(x=width * 0.01, y=height * 0.15, anchor='nw')
+        self.payout_label.place(x=width * 0.15, y=height * 0.05, anchor='nw')
 
         # Position the card back image to align with the 5th card
         if self.card_back_label:
