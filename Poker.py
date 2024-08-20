@@ -110,19 +110,18 @@ class PokerGame:
 
     def create_widgets(self):
         bg_color = '#006400'  # Dark green
-        border_color = '#00FF00'  # Lime green
         # Create widgets
         self.card_labels = [tk.Label(self.canvas) for _ in range(5)]
         self.hold_buttons = [tk.Button(self.canvas, text=f"Hold {i+1}", command=lambda i=i: self.toggle_hold(i), font=('Helvetica', 14, 'bold'), bg=bg_color, fg='white') for i in range(5)]
         self.draw_button = tk.Button(self.canvas, text="Draw", command=self.draw, font=('Helvetica', 14, 'bold'), bg=bg_color, fg='white')
         self.withdraw_button = tk.Button(self.canvas, text="Withdraw", command=self.withdraw, font=('Helvetica', 14, 'bold'), bg=bg_color, fg='white')
         self.status_label = tk.Label(self.canvas, text=f"Money: ${self.money}", font=('Helvetica', 14, 'bold'), bg=bg_color, fg='white')
+        self.status_label.config(highlightbackground="#3cb74a", highlightthickness=4)
         self.payout_label = tk.Label(self.canvas, text="Pair \n 1:1 \n Two Pair \n 5:1 \n Three of a Kind \n 10:1 \n Straight \n 25:1 \n Flush \n 50:1 \n Full House \n 100:1 \n Four of a Kind \n 1,000:1 \n Straight Flush \n 10,000:1 \n Royal Flush \n 100,000:1", font=('Helvetica', 14, 'bold'), bg=bg_color, fg='white')
-
 
         # Add widgets to canvas
         for label in self.card_labels:
-            label.place_forget()  # Hide initially
+            label.place_forget()  # Hide initially  
         for button in self.hold_buttons:
             button.place_forget()  # Hide initially
         self.draw_button.place_forget()  # Hide initially
