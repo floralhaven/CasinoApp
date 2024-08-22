@@ -39,10 +39,10 @@ def manage_money():
     messagebox.showinfo("Manage Money", "Money management coming soon!")
 
 def show_credits():
-    messagebox.showinfo("Credits", "Credits information will be displayed here.")
+    messagebox.showinfo("Credits", "Credits coming soon!")
 
 def show_help():
-    messagebox.showinfo("Help", "Help information Ccoming soon!")
+    messagebox.showinfo("Help", "Help information coming soon!")
 
 # Create the main menu window
 def create_main_menu():
