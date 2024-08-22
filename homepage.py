@@ -36,13 +36,13 @@ def play_slots():
     SlotMachine.start_game()  # Call the start function from SlotMachine.py
 
 def manage_money():
-    messagebox.showinfo("Manage Money", "Money management will start here.")
+    messagebox.showinfo("Manage Money", "Money management coming soon!")
 
 def show_credits():
     messagebox.showinfo("Credits", "Credits information will be displayed here.")
 
 def show_help():
-    messagebox.showinfo("Help", "Help information will be displayed here.")
+    messagebox.showinfo("Help", "Help information Ccoming soon!")
 
 # Create the main menu window
 def create_main_menu():
